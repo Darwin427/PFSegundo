@@ -1235,18 +1235,19 @@
 
   <script type="module">
     import { db } from "./firebase-config.js";
-    import { collection, addDoc, getDocs, orderBy, query, serverTimestamp }
+    import { collection, addDoc, getDocs, serverTimestamp }
       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     // Cargar compromisos existentes de Firestore
     async function cargarCompromisos() {
       try {
-        const snap = await getDocs(query(collection(db, 'compromisos'), orderBy('fecha', 'desc')));
-        snap.forEach(d => {
-          const { nombre, texto } = d.data();
+        const snap = await getDocs(collection(db, 'compromisos'));
+        const docs = snap.docs.map(d => d.data())
+          .sort((a, b) => (b.fecha?.seconds || 0) - (a.fecha?.seconds || 0));
+        docs.forEach(({ nombre, texto }) => {
           if (nombre && texto) agregarPiedraDOM(nombre, texto);
         });
-      } catch(e) {}
+      } catch(e) { console.error('Error cargando compromisos:', e); }
     }
     cargarCompromisos();
 
