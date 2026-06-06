@@ -1,0 +1,14 @@
+# Firebase
+firebase-config.js
+.firebaserc
+.firebase/
+
+# Node
+node_modules/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Archivos del proyecto que no van al repo
+*.docx
