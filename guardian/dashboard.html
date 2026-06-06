@@ -412,8 +412,7 @@
     async function loadMyPhotos() {
       const q = query(
         collection(db, 'fotos'),
-        where('acudienteId', '==', currentUser.uid),
-        orderBy('fecha', 'desc')
+        where('acudienteId', '==', currentUser.uid)
       );
       const snap = await getDocs(q);
       const grid = document.getElementById('my-photos');
@@ -437,8 +436,7 @@
     async function loadHistorial() {
       const q = query(
         collection(db, 'resultadosJuegos'),
-        where('acudienteId', '==', currentUser.uid),
-        orderBy('fecha', 'desc')
+        where('acudienteId', '==', currentUser.uid)
       );
       const snap = await getDocs(q);
       const tbody = document.getElementById('hist-table');
@@ -446,7 +444,10 @@
         tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:30px;color:#aaa">🎮 Aún no has jugado ningún juego</td></tr>';
         return;
       }
-      tbody.innerHTML = snap.docs.map(d => {
+      // Ordenar por fecha en el cliente
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.fecha?.seconds || 0) - (a.fecha?.seconds || 0));
+      tbody.innerHTML = docs.map(data => {
         const data = d.data();
         return `
           <tr>

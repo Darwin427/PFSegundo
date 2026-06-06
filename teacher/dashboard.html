@@ -440,8 +440,9 @@
 
     // FOTOS
     async function loadFotos() {
-      const snap = await getDocs(query(collection(db, 'fotos'), orderBy('fecha', 'desc')));
-      allFotos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const snap = await getDocs(collection(db, 'fotos'));
+      allFotos = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.fecha?.seconds || 0) - (a.fecha?.seconds || 0));
       document.getElementById('stat-fotos').textContent = allFotos.length;
       renderFotos(allFotos);
     }
@@ -502,8 +503,9 @@
 
     // JUEGOS
     async function loadJuegos() {
-      const snap = await getDocs(query(collection(db, 'resultadosJuegos'), orderBy('fecha', 'desc')));
-      allJuegos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const snap = await getDocs(collection(db, 'resultadosJuegos'));
+      allJuegos = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.fecha?.seconds || 0) - (a.fecha?.seconds || 0));
       document.getElementById('stat-juegos').textContent = allJuegos.length;
       renderJuegos(allJuegos);
     }
