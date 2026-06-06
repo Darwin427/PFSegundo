@@ -29,31 +29,26 @@
     .card {
       background: var(--blanco);
       border-radius: 32px;
-      padding: 40px 36px;
+      padding: 36px 32px;
       width: 100%; max-width: 460px;
       box-shadow: 0 20px 60px rgba(0,0,0,.3);
-      position: relative;
-      z-index: 1;
+      position: relative; z-index: 1;
     }
     .logo {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
     .logo .ico {
-      width: 80px; height: 80px;
+      width: 76px; height: 76px;
       background: var(--verde-p);
       border-radius: 50%;
       display: grid; place-items: center;
-      font-size: 44px;
-      margin: 0 auto 12px;
+      font-size: 42px;
+      margin: 0 auto 10px;
       border: 4px solid var(--verde-m);
     }
-    .logo h1 {
-      font-family: 'Fredoka One', cursive;
-      font-size: 1.7rem;
-      color: var(--verde);
-    }
-    .logo p { font-size: .9rem; color: #888; margin-top: 4px; }
+    .logo h1 { font-family: 'Fredoka One', cursive; font-size: 1.7rem; color: var(--verde); }
+    .logo p  { font-size: .88rem; color: #999; margin-top: 3px; }
 
     /* TABS */
     .tabs {
@@ -61,7 +56,7 @@
       background: var(--verde-p);
       border-radius: 50px;
       padding: 4px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
     .tab {
       flex: 1; text-align: center;
@@ -74,25 +69,16 @@
       transition: all .2s;
       border: none; background: none;
     }
-    .tab.active {
-      background: var(--verde);
-      color: var(--blanco);
-      box-shadow: 0 3px 10px rgba(0,0,0,.2);
-    }
+    .tab.active { background: var(--verde); color: var(--blanco); box-shadow: 0 3px 10px rgba(0,0,0,.2); }
 
-    /* FORMS */
-    .form-section { display: none; }
-    .form-section.active { display: block; }
+    /* PANELS */
+    .panel { display: none; }
+    .panel.active { display: block; }
 
-    .field { margin-bottom: 16px; }
-    .field label {
-      display: block;
-      font-weight: 800;
-      font-size: .9rem;
-      color: #444;
-      margin-bottom: 6px;
-    }
-    .field input, .field select {
+    /* FIELDS */
+    .field { margin-bottom: 15px; }
+    .field label { display: block; font-weight: 800; font-size: .88rem; color: #444; margin-bottom: 5px; }
+    .field input {
       width: 100%;
       padding: 13px 16px;
       border: 2.5px solid #e0e0e0;
@@ -102,8 +88,9 @@
       outline: none;
       transition: border-color .2s;
     }
-    .field input:focus, .field select:focus { border-color: var(--verde-m); }
+    .field input:focus { border-color: var(--verde-m); }
 
+    /* BTNS */
     .btn {
       width: 100%;
       padding: 14px;
@@ -113,35 +100,41 @@
       font-size: 1.2rem;
       cursor: pointer;
       transition: transform .2s, box-shadow .2s;
-      margin-top: 6px;
+      margin-top: 4px;
     }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
-    .btn-verde { background: linear-gradient(135deg, var(--verde-m), var(--verde)); color: var(--blanco); }
+    .btn-verde  { background: linear-gradient(135deg, var(--verde-m), var(--verde)); color: var(--blanco); }
     .btn-morado { background: linear-gradient(135deg, #9c27b0, var(--morado)); color: var(--blanco); }
 
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 20px 0;
-      color: #bbb; font-size: .85rem;
+    /* SELECTOR DE ROL */
+    .role-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 22px;
     }
-    .divider::before, .divider::after {
-      content: ''; flex: 1;
-      height: 1px; background: #e0e0e0;
+    .role-btn {
+      padding: 18px 12px;
+      border-radius: 18px;
+      border: 3px solid #e0e0e0;
+      background: var(--blanco);
+      cursor: pointer;
+      text-align: center;
+      transition: all .2s;
+      font-family: 'Nunito', sans-serif;
     }
+    .role-btn:hover { border-color: var(--verde-m); background: var(--verde-p); }
+    .role-btn.active-role.guardian { border-color: var(--verde-m); background: var(--verde-p); }
+    .role-btn.active-role.docente  { border-color: var(--morado); background: #f3e5f5; }
+    .role-ico  { font-size: 2.4rem; display: block; margin-bottom: 8px; }
+    .role-name { font-family: 'Fredoka One', cursive; font-size: 1rem; color: var(--verde); }
+    .role-btn.active-role.docente .role-name { color: var(--morado); }
 
-    .teacher-section {
-      background: #f3e5f5;
-      border-radius: 16px;
-      padding: 20px;
-      border: 2px solid #ce93d8;
-    }
-    .teacher-section h3 {
-      font-family: 'Fredoka One', cursive;
-      color: var(--morado);
-      margin-bottom: 14px;
-      font-size: 1.1rem;
-    }
+    /* FORM REGISTRO */
+    .reg-form { display: none; }
+    .reg-form.active { display: block; }
 
+    /* ALERT */
     .alert {
       padding: 12px 16px;
       border-radius: 12px;
@@ -150,30 +143,33 @@
       margin-bottom: 14px;
       display: none;
     }
-    .alert.error { background: #ffebee; color: var(--rojo); display: block; }
+    .alert.error   { background: #ffebee; color: var(--rojo); display: block; }
     .alert.success { background: #e8f5e9; color: var(--verde); display: block; }
 
     .back-link {
-      display: block;
-      text-align: center;
-      margin-top: 20px;
-      color: #888;
-      font-size: .9rem;
-      text-decoration: none;
+      display: block; text-align: center;
+      margin-top: 18px; color: #aaa; font-size: .88rem; text-decoration: none;
     }
     .back-link:hover { color: var(--verde); }
 
     .spinner {
       display: inline-block;
-      width: 20px; height: 20px;
+      width: 18px; height: 18px;
       border: 3px solid rgba(255,255,255,.3);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin .7s linear infinite;
       vertical-align: middle;
-      margin-right: 8px;
+      margin-right: 6px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    .select-hint {
+      text-align: center;
+      color: #aaa;
+      font-size: .95rem;
+      padding: 20px 0;
+    }
   </style>
 </head>
 <body>
@@ -184,7 +180,6 @@
       <p>"Un Mundo de Saberes"</p>
     </div>
 
-    <!-- TABS -->
     <div class="tabs">
       <button class="tab active" onclick="switchTab('login')">Iniciar Sesión</button>
       <button class="tab" onclick="switchTab('register')">Registrarme</button>
@@ -192,8 +187,8 @@
 
     <div id="alert" class="alert"></div>
 
-    <!-- LOGIN -->
-    <div id="login-section" class="form-section active">
+    <!-- ===== INICIAR SESIÓN ===== -->
+    <div id="panel-login" class="panel active">
       <div class="field">
         <label>📧 Correo electrónico</label>
         <input type="email" id="login-email" placeholder="tucorreo@email.com" />
@@ -202,57 +197,68 @@
         <label>🔒 Contraseña</label>
         <input type="password" id="login-pass" placeholder="Tu contraseña" />
       </div>
-      <button class="btn btn-verde" onclick="login()" id="btn-login">
-        🌿 Ingresar
-      </button>
+      <button class="btn btn-verde" id="btn-login" onclick="login()">🌿 Ingresar</button>
+    </div>
 
-      <div class="divider">acceso docente</div>
+    <!-- ===== REGISTRARME ===== -->
+    <div id="panel-register" class="panel">
 
-      <div class="teacher-section">
-        <h3>👩‍🏫 Acceso Docente</h3>
+      <!-- Selector de rol -->
+      <div class="role-selector">
+        <div class="role-btn guardian" onclick="selectRole('guardian')" id="role-guardian">
+          <span class="role-ico">👨‍👩‍👧</span>
+          <span class="role-name">Soy Acudiente</span>
+        </div>
+        <div class="role-btn docente" onclick="selectRole('docente')" id="role-docente">
+          <span class="role-ico">👩‍🏫</span>
+          <span class="role-name">Soy Docente</span>
+        </div>
+      </div>
+
+      <!-- Hint inicial -->
+      <div id="role-hint" class="select-hint">👆 Selecciona tu perfil para continuar</div>
+
+      <!-- Formulario Acudiente -->
+      <div id="form-guardian" class="reg-form">
         <div class="field">
-          <label>📧 Correo</label>
-          <input type="email" id="teacher-email" placeholder="correo docente" />
+          <label>👤 Tu nombre completo</label>
+          <input type="text" id="g-name" placeholder="Nombre del acudiente" />
+        </div>
+        <div class="field">
+          <label>🧒 Nombre del estudiante</label>
+          <input type="text" id="g-student" placeholder="¿De qué niño/a eres acudiente?" />
+        </div>
+        <div class="field">
+          <label>📧 Correo electrónico</label>
+          <input type="email" id="g-email" placeholder="tucorreo@email.com" />
         </div>
         <div class="field">
           <label>🔒 Contraseña</label>
-          <input type="password" id="teacher-pass" placeholder="contraseña" />
+          <input type="password" id="g-pass" placeholder="Mínimo 6 caracteres" />
+        </div>
+        <div class="field">
+          <label>🔒 Confirmar contraseña</label>
+          <input type="password" id="g-pass2" placeholder="Repite la contraseña" />
+        </div>
+        <button class="btn btn-verde" id="btn-guardian" onclick="registerGuardian()">🌱 Crear cuenta de Acudiente</button>
+      </div>
+
+      <!-- Formulario Docente -->
+      <div id="form-docente" class="reg-form">
+        <div class="field">
+          <label>📧 Correo electrónico</label>
+          <input type="email" id="d-email" placeholder="correo docente" />
+        </div>
+        <div class="field">
+          <label>🔒 Contraseña</label>
+          <input type="password" id="d-pass" placeholder="Mínimo 6 caracteres" />
         </div>
         <div class="field">
           <label>🗝️ Código Docente</label>
-          <input type="password" id="teacher-code" placeholder="Código especial" />
+          <input type="password" id="d-code" placeholder="Código especial de acceso" />
         </div>
-        <button class="btn btn-morado" onclick="loginTeacher()" id="btn-teacher">
-          👩‍🏫 Ingresar como Docente
-        </button>
+        <button class="btn btn-morado" id="btn-docente" onclick="registerDocente()">👩‍🏫 Crear cuenta Docente</button>
       </div>
-    </div>
-
-    <!-- REGISTER -->
-    <div id="register-section" class="form-section">
-      <div class="field">
-        <label>👤 Tu nombre completo</label>
-        <input type="text" id="reg-name" placeholder="Nombre del acudiente" />
-      </div>
-      <div class="field">
-        <label>🧒 Nombre del estudiante</label>
-        <input type="text" id="reg-student" placeholder="¿De qué niño/a eres acudiente?" />
-      </div>
-      <div class="field">
-        <label>📧 Correo electrónico</label>
-        <input type="email" id="reg-email" placeholder="tucorreo@email.com" />
-      </div>
-      <div class="field">
-        <label>🔒 Contraseña</label>
-        <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" />
-      </div>
-      <div class="field">
-        <label>🔒 Confirmar contraseña</label>
-        <input type="password" id="reg-pass2" placeholder="Repite la contraseña" />
-      </div>
-      <button class="btn btn-verde" onclick="register()" id="btn-register">
-        🌱 Crear mi cuenta
-      </button>
     </div>
 
     <a href="index.html" class="back-link">← Volver al inicio</a>
@@ -270,150 +276,126 @@
 
     const TEACHER_CODE = "CAMPOHUERTA2026";
 
+    // ===== TABS =====
     window.switchTab = (tab) => {
       document.querySelectorAll('.tab').forEach((t, i) => {
         t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
       });
-      document.getElementById('login-section').classList.toggle('active', tab === 'login');
-      document.getElementById('register-section').classList.toggle('active', tab === 'register');
+      document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+      document.getElementById('panel-register').classList.toggle('active', tab === 'register');
       hideAlert();
     };
 
+    // ===== ROL SELECTOR =====
+    window.selectRole = (role) => {
+      document.getElementById('role-guardian').classList.toggle('active-role', role === 'guardian');
+      document.getElementById('role-docente').classList.toggle('active-role', role === 'docente');
+      document.getElementById('role-hint').style.display = 'none';
+      document.getElementById('form-guardian').classList.toggle('active', role === 'guardian');
+      document.getElementById('form-docente').classList.toggle('active', role === 'docente');
+      hideAlert();
+    };
+
+    // ===== ALERTS =====
     function showAlert(msg, type = 'error') {
       const el = document.getElementById('alert');
       el.textContent = msg;
       el.className = `alert ${type}`;
     }
-
     function hideAlert() {
       document.getElementById('alert').className = 'alert';
     }
 
-    function setLoading(btnId, loading) {
-      const btn = document.getElementById(btnId);
-      if (loading) {
-        btn.innerHTML = '<span class="spinner"></span> Cargando...';
-        btn.disabled = true;
-      } else {
-        btn.disabled = false;
-      }
+    function setLoading(id, loading, defaultText) {
+      const btn = document.getElementById(id);
+      btn.disabled = loading;
+      btn.innerHTML = loading ? '<span class="spinner"></span> Cargando...' : defaultText;
     }
 
+    function traducirError(code) {
+      const map = {
+        'auth/invalid-email':        'Correo inválido',
+        'auth/user-not-found':       'Usuario no encontrado',
+        'auth/wrong-password':       'Contraseña incorrecta',
+        'auth/invalid-credential':   'Correo o contraseña incorrectos',
+        'auth/email-already-in-use': 'Este correo ya está registrado',
+        'auth/weak-password':        'Contraseña muy débil (mínimo 6 caracteres)',
+        'auth/too-many-requests':    'Demasiados intentos, espera un momento'
+      };
+      return map[code] || 'Error, intenta de nuevo';
+    }
+
+    // ===== LOGIN =====
     window.login = async () => {
       const email = document.getElementById('login-email').value.trim();
       const pass  = document.getElementById('login-pass').value;
       if (!email || !pass) { showAlert('⚠️ Completa todos los campos'); return; }
 
-      setLoading('btn-login', true);
+      setLoading('btn-login', true, '🌿 Ingresar');
       try {
         const cred = await signInWithEmailAndPassword(auth, email, pass);
         const snap = await getDoc(doc(db, 'usuarios', cred.user.uid));
-        if (!snap.exists()) throw new Error('Usuario no encontrado');
-        const data = snap.data();
-        if (data.rol === 'teacher') {
-          window.location.href = './teacher/dashboard.html';
-        } else {
-          window.location.href = './guardian/dashboard.html';
-        }
+        if (!snap.exists()) throw new Error('no-profile');
+        window.location.href = snap.data().rol === 'teacher'
+          ? './teacher/dashboard.html'
+          : './guardian/dashboard.html';
       } catch(e) {
-        showAlert('❌ ' + traducirError(e.code));
-        document.getElementById('btn-login').innerHTML = '🌿 Ingresar';
-        document.getElementById('btn-login').disabled = false;
+        showAlert('❌ ' + (e.message === 'no-profile' ? 'Perfil no encontrado' : traducirError(e.code)));
+        setLoading('btn-login', false, '🌿 Ingresar');
       }
     };
 
-    window.loginTeacher = async () => {
-      const email = document.getElementById('teacher-email').value.trim();
-      const pass  = document.getElementById('teacher-pass').value;
-      const code  = document.getElementById('teacher-code').value.trim();
-
-      if (!email || !pass || !code) { showAlert('⚠️ Completa todos los campos de docente'); return; }
-      if (code !== TEACHER_CODE) { showAlert('❌ Código docente incorrecto'); return; }
-
-      setLoading('btn-teacher', true);
-      try {
-        let cred;
-        try {
-          cred = await signInWithEmailAndPassword(auth, email, pass);
-        } catch(e) {
-          // Si no existe, crear la cuenta de docente
-          if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
-            cred = await createUserWithEmailAndPassword(auth, email, pass);
-            await setDoc(doc(db, 'usuarios', cred.user.uid), {
-              nombre: 'Docente',
-              email,
-              rol: 'teacher',
-              creadoEn: new Date()
-            });
-          } else throw e;
-        }
-        const snap = await getDoc(doc(db, 'usuarios', cred.user.uid));
-        if (snap.exists() && snap.data().rol !== 'teacher') {
-          showAlert('❌ Este correo no tiene perfil de docente');
-          document.getElementById('btn-teacher').innerHTML = '👩‍🏫 Ingresar como Docente';
-          document.getElementById('btn-teacher').disabled = false;
-          return;
-        }
-        if (!snap.exists()) {
-          await setDoc(doc(db, 'usuarios', cred.user.uid), {
-            nombre: 'Docente',
-            email,
-            rol: 'teacher',
-            creadoEn: new Date()
-          });
-        }
-        window.location.href = './teacher/dashboard.html';
-      } catch(e) {
-        showAlert('❌ ' + traducirError(e.code));
-        document.getElementById('btn-teacher').innerHTML = '👩‍🏫 Ingresar como Docente';
-        document.getElementById('btn-teacher').disabled = false;
-      }
-    };
-
-    window.register = async () => {
-      const nombre   = document.getElementById('reg-name').value.trim();
-      const student  = document.getElementById('reg-student').value.trim();
-      const email    = document.getElementById('reg-email').value.trim();
-      const pass     = document.getElementById('reg-pass').value;
-      const pass2    = document.getElementById('reg-pass2').value;
+    // ===== REGISTRO ACUDIENTE =====
+    window.registerGuardian = async () => {
+      const nombre   = document.getElementById('g-name').value.trim();
+      const student  = document.getElementById('g-student').value.trim();
+      const email    = document.getElementById('g-email').value.trim();
+      const pass     = document.getElementById('g-pass').value;
+      const pass2    = document.getElementById('g-pass2').value;
 
       if (!nombre || !student || !email || !pass || !pass2) {
         showAlert('⚠️ Completa todos los campos'); return;
       }
       if (pass !== pass2) { showAlert('❌ Las contraseñas no coinciden'); return; }
-      if (pass.length < 6) { showAlert('❌ La contraseña debe tener mínimo 6 caracteres'); return; }
+      if (pass.length < 6) { showAlert('❌ Mínimo 6 caracteres en la contraseña'); return; }
 
-      setLoading('btn-register', true);
+      setLoading('btn-guardian', true, '🌱 Crear cuenta de Acudiente');
       try {
         const cred = await createUserWithEmailAndPassword(auth, email, pass);
         await setDoc(doc(db, 'usuarios', cred.user.uid), {
-          nombre,
-          nombreEstudiante: student,
-          email,
-          rol: 'guardian',
-          creadoEn: new Date()
+          nombre, nombreEstudiante: student, email, rol: 'guardian', creadoEn: new Date()
         });
         showAlert('✅ ¡Cuenta creada! Redirigiendo...', 'success');
         setTimeout(() => { window.location.href = './guardian/dashboard.html'; }, 1500);
       } catch(e) {
         showAlert('❌ ' + traducirError(e.code));
-        document.getElementById('btn-register').innerHTML = '🌱 Crear mi cuenta';
-        document.getElementById('btn-register').disabled = false;
+        setLoading('btn-guardian', false, '🌱 Crear cuenta de Acudiente');
       }
     };
 
-    function traducirError(code) {
-      const map = {
-        'auth/invalid-email': 'Correo inválido',
-        'auth/user-not-found': 'Usuario no encontrado',
-        'auth/wrong-password': 'Contraseña incorrecta',
-        'auth/invalid-credential': 'Correo o contraseña incorrectos',
-        'auth/email-already-in-use': 'Este correo ya está registrado',
-        'auth/weak-password': 'Contraseña muy débil',
-        'auth/too-many-requests': 'Demasiados intentos, espera un momento'
-      };
-      return map[code] || 'Error al ingresar, intenta de nuevo';
-    }
+    // ===== REGISTRO DOCENTE =====
+    window.registerDocente = async () => {
+      const email = document.getElementById('d-email').value.trim();
+      const pass  = document.getElementById('d-pass').value;
+      const code  = document.getElementById('d-code').value.trim();
+
+      if (!email || !pass || !code) { showAlert('⚠️ Completa todos los campos'); return; }
+      if (code !== TEACHER_CODE)    { showAlert('❌ Código docente incorrecto'); return; }
+      if (pass.length < 6)          { showAlert('❌ Mínimo 6 caracteres en la contraseña'); return; }
+
+      setLoading('btn-docente', true, '👩‍🏫 Crear cuenta Docente');
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        await setDoc(doc(db, 'usuarios', cred.user.uid), {
+          nombre: 'Docente', email, rol: 'teacher', creadoEn: new Date()
+        });
+        showAlert('✅ ¡Cuenta docente creada! Redirigiendo...', 'success');
+        setTimeout(() => { window.location.href = './teacher/dashboard.html'; }, 1500);
+      } catch(e) {
+        showAlert('❌ ' + traducirError(e.code));
+        setLoading('btn-docente', false, '👩‍🏫 Crear cuenta Docente');
+      }
+    };
   </script>
 </body>
 </html>
