@@ -266,6 +266,9 @@
     <button class="nav-item" onclick="showPanel('juegos')">
       <span class="nav-ico">🎮</span><span>Resultados Juegos</span>
     </button>
+    <button class="nav-item" onclick="showPanel('compromisos')">
+      <span class="nav-ico">🪨</span><span>Compromisos</span>
+    </button>
 
     <div class="nav-logout">
       <button class="nav-item" onclick="logout()">
@@ -366,6 +369,23 @@
         </table>
       </div>
     </div>
+
+    <!-- COMPROMISOS -->
+    <div id="panel-compromisos" class="panel">
+      <div class="search-bar">
+        <input type="text" id="search-compromiso" placeholder="🔍 Buscar por nombre..." oninput="filterCompromisos()" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Nombre</th><th>Compromiso</th><th>Fecha</th><th>Acción</th></tr>
+          </thead>
+          <tbody id="compromisos-table">
+            <tr><td colspan="4" class="loading">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </main>
 
   <script type="module">
@@ -376,7 +396,7 @@
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { ref, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-    let allAcudientes = [], allFotos = [], allJuegos = [];
+    let allAcudientes = [], allFotos = [], allJuegos = [], allCompromisos = [];
 
     // AUTH CHECK
     onAuthStateChanged(auth, async (user) => {
@@ -390,7 +410,7 @@
     });
 
     async function loadAll() {
-      await Promise.all([loadAcudientes(), loadFotos(), loadJuegos()]);
+      await Promise.all([loadAcudientes(), loadFotos(), loadJuegos(), loadCompromisos()]);
       loadRecentPhotos();
     }
 
@@ -531,12 +551,49 @@
       renderJuegos(allJuegos.filter(j => (j.nombreEstudiante||'').toLowerCase().includes(q)));
     };
 
+    // COMPROMISOS
+    async function loadCompromisos() {
+      const snap = await getDocs(collection(db, 'compromisos'));
+      allCompromisos = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.fecha?.seconds || 0) - (a.fecha?.seconds || 0));
+      renderCompromisos(allCompromisos);
+    }
+
+    function renderCompromisos(list) {
+      const tbody = document.getElementById('compromisos-table');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="4"><div class="empty"><span class="empty-ico">🪨</span>Aún no hay compromisos sembrados</div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(c => `
+        <tr>
+          <td><strong>${c.nombre || '—'}</strong></td>
+          <td>${c.texto || '—'}</td>
+          <td>${c.fecha?.toDate ? c.fecha.toDate().toLocaleDateString('es-CO') : '—'}</td>
+          <td><button class="btn-sm btn-danger" onclick="deleteCompromiso('${c.id}')">🗑️</button></td>
+        </tr>
+      `).join('');
+    }
+
+    window.filterCompromisos = () => {
+      const q = document.getElementById('search-compromiso').value.toLowerCase();
+      renderCompromisos(allCompromisos.filter(c => (c.nombre||'').toLowerCase().includes(q)));
+    };
+
+    window.deleteCompromiso = async (id) => {
+      if (!confirm('¿Eliminar este compromiso?')) return;
+      await deleteDoc(doc(db, 'compromisos', id));
+      allCompromisos = allCompromisos.filter(c => c.id !== id);
+      renderCompromisos(allCompromisos);
+    };
+
     // NAV
     const TITLES = {
-      dashboard: '🏠 Inicio',
-      acudientes: '👨‍👩‍👧 Acudientes',
-      fotos: '📸 Fotos del Proyecto',
-      juegos: '🎮 Resultados de Juegos'
+      dashboard:    '🏠 Inicio',
+      acudientes:   '👨‍👩‍👧 Acudientes',
+      fotos:        '📸 Fotos del Proyecto',
+      juegos:       '🎮 Resultados de Juegos',
+      compromisos:  '🪨 Muro de Compromisos'
     };
 
     window.showPanel = (name) => {

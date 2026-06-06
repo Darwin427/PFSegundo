@@ -297,15 +297,20 @@
     <div id="tab-fotos" class="panel">
       <div id="foto-alert" class="alert"></div>
 
-      <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-        <span class="up-ico">📷</span>
-        <h3>Subir una foto del proyecto</h3>
-        <p>Haz clic aquí para subir una foto de lo que han hecho en casa</p>
+      <div class="upload-zone" onclick="document.getElementById('file-input').click()" id="upload-zone">
+        <span class="up-ico" id="upload-ico">📷</span>
+        <h3 id="upload-title">Subir una foto del proyecto</h3>
+        <p id="upload-hint">Haz clic aquí para subir una foto de lo que han hecho en casa</p>
+        <img id="foto-preview" src="" alt="Vista previa" style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:12px;margin-top:12px;" />
         <div class="progress-bar" id="progress-bar">
           <div class="progress-fill" id="progress-fill"></div>
         </div>
       </div>
-      <input type="file" id="file-input" accept="image/*" onchange="uploadPhoto(event)" />
+      <div id="preview-actions" style="display:none;text-align:center;margin-top:12px;gap:10px;justify-content:center;display:none;">
+        <button onclick="confirmarSubida()" style="background:linear-gradient(135deg,#4caf50,#2d6a2d);color:#fff;border:none;padding:11px 28px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;">✅ Subir esta foto</button>
+        <button onclick="cancelarPreview()" style="background:#f5f5f5;color:#666;border:none;padding:11px 22px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;">❌ Cancelar</button>
+      </div>
+      <input type="file" id="file-input" accept="image/*" onchange="previewPhoto(event)" />
 
       <div class="section-title">📸 Mis fotos subidas</div>
       <div class="my-photos" id="my-photos">
@@ -352,7 +357,7 @@
       currentUser = user;
       userData = snap.data();
       const studentName = userData.nombreEstudiante || 'tu estudiante';
-      document.getElementById('student-name').textContent = '¡Hola! Bienvenido/a, soy el acudiente de ' + studentName + ' 🌱';
+      document.getElementById('student-name').textContent = '¡Bienvenido/a! Este es el espacio de ' + studentName + ' 🌱';
       document.getElementById('nav-student').textContent = '🧒 ' + studentName;
       loadMyPhotos();
       loadHistorial();
@@ -366,43 +371,68 @@
       btn.classList.add('active');
     };
 
-    // UPLOAD
-    window.uploadPhoto = async (e) => {
+    // PREVIEW
+    let selectedFile = null;
+
+    window.previewPhoto = (e) => {
       const file = e.target.files[0];
-      if (!file || !currentUser) return;
+      if (!file) return;
       if (file.size > 5 * 1024 * 1024) {
         showAlert('foto-alert', '❌ La foto es muy grande. Máximo 5MB.', 'error'); return;
       }
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.getElementById('foto-preview').src = ev.target.result;
+        document.getElementById('foto-preview').style.display = 'block';
+        document.getElementById('upload-ico').style.display = 'none';
+        document.getElementById('upload-title').textContent = '¡Foto lista para subir!';
+        document.getElementById('upload-hint').textContent = file.name;
+        document.getElementById('preview-actions').style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
+    };
 
+    window.cancelarPreview = () => {
+      selectedFile = null;
+      document.getElementById('file-input').value = '';
+      document.getElementById('foto-preview').style.display = 'none';
+      document.getElementById('upload-ico').style.display = 'block';
+      document.getElementById('upload-title').textContent = 'Subir una foto del proyecto';
+      document.getElementById('upload-hint').textContent = 'Haz clic aquí para subir una foto de lo que han hecho en casa';
+      document.getElementById('preview-actions').style.display = 'none';
+    };
+
+    window.confirmarSubida = async () => {
+      if (!selectedFile || !currentUser) return;
       const bar  = document.getElementById('progress-bar');
       const fill = document.getElementById('progress-fill');
       bar.style.display = 'block';
+      document.getElementById('preview-actions').style.display = 'none';
 
-      const path = `fotos/${currentUser.uid}/${Date.now()}_${file.name}`;
+      const path = `fotos/${currentUser.uid}/${Date.now()}_${selectedFile.name}`;
       const storageRef = ref(storage, path);
-      const task = uploadBytesResumable(storageRef, file);
+      const task = uploadBytesResumable(storageRef, selectedFile);
 
       task.on('state_changed',
         (snap) => {
-          const pct = (snap.bytesTransferred / snap.totalBytes) * 100;
-          fill.style.width = pct + '%';
+          fill.style.width = (snap.bytesTransferred / snap.totalBytes * 100) + '%';
         },
-        (err) => {
+        () => {
           bar.style.display = 'none';
           showAlert('foto-alert', '❌ Error al subir la foto', 'error');
         },
         async () => {
           const url = await getDownloadURL(task.snapshot.ref);
           await addDoc(collection(db, 'fotos'), {
-            url,
-            storagePath: path,
+            url, storagePath: path,
             acudienteId: currentUser.uid,
             nombreEstudiante: userData.nombreEstudiante || '',
             fecha: serverTimestamp()
           });
           bar.style.display = 'none';
           fill.style.width = '0%';
-          e.target.value = '';
+          cancelarPreview();
           showAlert('foto-alert', '✅ ¡Foto subida exitosamente!', 'success');
           loadMyPhotos();
         }

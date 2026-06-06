@@ -1207,10 +1207,7 @@
       'linear-gradient(145deg,#f8bbd9,#f48fb1)',
     ];
 
-    function sembrar() {
-      const nombre  = document.getElementById('nombreInput').value.trim();
-      const texto   = document.getElementById('compromisoInput').value.trim();
-      if (!nombre || !texto) { toast('✏️ ¡Escribe tu nombre y tu compromiso!'); return; }
+    function agregarPiedraDOM(nombre, texto) {
       const grid = document.getElementById('muroGrid');
       const p = document.createElement('div');
       p.className = 'piedra';
@@ -1224,9 +1221,6 @@
         p.style.opacity = '1';
         p.style.transform = 'scale(1)';
       });
-      document.getElementById('nombreInput').value = '';
-      document.getElementById('compromisoInput').value = '';
-      toast('🎉 ¡Tu compromiso fue sembrado, ' + nombre + '!');
     }
 
     function toast(msg) {
@@ -1235,6 +1229,40 @@
       t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), 3200);
     }
+
+    // sembrar() se define en el módulo de abajo
+  </script>
+
+  <script type="module">
+    import { db } from "./firebase-config.js";
+    import { collection, addDoc, getDocs, orderBy, query, serverTimestamp }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Cargar compromisos existentes de Firestore
+    async function cargarCompromisos() {
+      try {
+        const snap = await getDocs(query(collection(db, 'compromisos'), orderBy('fecha', 'desc')));
+        snap.forEach(d => {
+          const { nombre, texto } = d.data();
+          if (nombre && texto) agregarPiedraDOM(nombre, texto);
+        });
+      } catch(e) {}
+    }
+    cargarCompromisos();
+
+    // Sembrar compromiso y guardar en Firestore
+    window.sembrar = async () => {
+      const nombre = document.getElementById('nombreInput').value.trim();
+      const texto  = document.getElementById('compromisoInput').value.trim();
+      if (!nombre || !texto) { toast('✏️ ¡Escribe tu nombre y tu compromiso!'); return; }
+      agregarPiedraDOM(nombre, texto);
+      document.getElementById('nombreInput').value = '';
+      document.getElementById('compromisoInput').value = '';
+      toast('🎉 ¡Tu compromiso fue sembrado, ' + nombre + '!');
+      try {
+        await addDoc(collection(db, 'compromisos'), { nombre, texto, fecha: serverTimestamp() });
+      } catch(e) {}
+    };
   </script>
 </body>
 </html>

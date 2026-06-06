@@ -198,6 +198,24 @@
         <input type="password" id="login-pass" placeholder="Tu contraseña" />
       </div>
       <button class="btn btn-verde" id="btn-login" onclick="login()">🌿 Ingresar</button>
+      <p style="text-align:center;margin-top:14px;">
+        <a href="#" onclick="showRecovery()" style="color:#aaa;font-size:.88rem;text-decoration:none;">¿Olvidaste tu contraseña?</a>
+      </p>
+    </div>
+
+    <!-- ===== RECUPERAR CONTRASEÑA ===== -->
+    <div id="panel-recovery" class="panel">
+      <p style="text-align:center;color:#666;font-size:.95rem;margin-bottom:18px;">
+        Escribe tu correo y te enviamos un enlace para restablecer tu contraseña.
+      </p>
+      <div class="field">
+        <label>📧 Correo electrónico</label>
+        <input type="email" id="recovery-email" placeholder="tucorreo@email.com" />
+      </div>
+      <button class="btn btn-verde" id="btn-recovery" onclick="sendRecovery()">📧 Enviar enlace</button>
+      <p style="text-align:center;margin-top:14px;">
+        <a href="#" onclick="switchTab('login')" style="color:#aaa;font-size:.88rem;text-decoration:none;">← Volver al inicio de sesión</a>
+      </p>
     </div>
 
     <!-- ===== REGISTRARME ===== -->
@@ -268,13 +286,34 @@
     import { auth, db } from "./firebase-config.js";
     import {
       signInWithEmailAndPassword,
-      createUserWithEmailAndPassword
+      createUserWithEmailAndPassword,
+      sendPasswordResetEmail
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import {
       doc, setDoc, getDoc
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const TEACHER_CODE = "CAMPOHUERTA2026";
+
+    // ===== RECOVERY =====
+    window.showRecovery = () => {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-recovery').classList.add('active');
+      hideAlert();
+    };
+
+    window.sendRecovery = async () => {
+      const email = document.getElementById('recovery-email').value.trim();
+      if (!email) { showAlert('⚠️ Escribe tu correo'); return; }
+      setLoading('btn-recovery', true, '📧 Enviar enlace');
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showAlert('✅ ¡Correo enviado! Revisa tu bandeja de entrada.', 'success');
+      } catch(e) {
+        showAlert('❌ ' + traducirError(e.code));
+      }
+      setLoading('btn-recovery', false, '📧 Enviar enlace');
+    };
 
     // ===== TABS =====
     window.switchTab = (tab) => {
