@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz de Plantas – Campo Huerta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --verde: #2d6a2d; --verde-m: #4caf50; --verde-p: #e8f5e9;
+      --amarillo: #ffd54f; --rojo: #e53935; --blanco: #fff;
+    }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #1b5e20, #2e7d32, #388e3c);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    .game-card {
+      background: var(--blanco);
+      border-radius: 32px;
+      padding: 36px 32px;
+      width: 100%; max-width: 600px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+      position: relative; z-index: 1;
+    }
+
+    /* HEADER */
+    .game-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .game-header h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.5rem; color: var(--verde);
+    }
+    .progress-info {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem; color: #888;
+    }
+    .progress-track {
+      width: 100%; height: 10px;
+      background: #e0e0e0; border-radius: 5px;
+      margin-bottom: 24px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--verde-m), var(--verde));
+      border-radius: 5px;
+      transition: width .4s ease;
+    }
+
+    /* QUESTION */
+    .question-box {
+      background: var(--verde-p);
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+      border: 3px solid var(--verde-m);
+    }
+    .q-emoji { font-size: 4rem; display: block; margin-bottom: 14px;
+      animation: bounce 1.5s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)} }
+    .q-text {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      color: var(--verde);
+      line-height: 1.4;
+    }
+
+    /* OPTIONS */
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .option-btn {
+      padding: 16px 12px;
+      border: 3px solid #e0e0e0;
+      border-radius: 16px;
+      background: var(--blanco);
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      transition: all .2s;
+      text-align: center;
+      line-height: 1.35;
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--verde-m);
+      background: var(--verde-p);
+      transform: scale(1.03);
+    }
+    .option-btn.correct {
+      background: #e8f5e9; border-color: var(--verde-m);
+      color: var(--verde);
+      animation: pulse-correct .4s ease;
+    }
+    .option-btn.wrong {
+      background: #ffebee; border-color: var(--rojo);
+      color: var(--rojo);
+    }
+    @keyframes pulse-correct {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.07); }
+      100% { transform: scale(1); }
+    }
+
+    /* FEEDBACK */
+    .feedback {
+      text-align: center;
+      padding: 14px;
+      border-radius: 16px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.2rem;
+      min-height: 54px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .3s;
+    }
+    .feedback.correct { background: #e8f5e9; color: var(--verde); }
+    .feedback.wrong   { background: #ffebee; color: var(--rojo); }
+
+    /* RESULT SCREEN */
+    .result-screen {
+      display: none;
+      text-align: center;
+    }
+    .result-screen.show { display: block; }
+
+    .result-emoji { font-size: 5rem; display: block; margin-bottom: 16px; }
+    .result-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2rem; color: var(--verde); margin-bottom: 10px;
+    }
+    .result-score {
+      font-family: 'Fredoka One', cursive;
+      font-size: 3rem; color: var(--amarillo);
+      background: var(--verde);
+      display: inline-block;
+      padding: 14px 36px;
+      border-radius: 50px;
+      margin: 14px 0;
+      box-shadow: 0 6px 18px rgba(0,0,0,.2);
+    }
+    .result-msg { font-size: 1.05rem; color: #555; margin: 12px 0 24px; line-height: 1.6; }
+    .stars { font-size: 2.5rem; margin-bottom: 16px; }
+
+    .btn-action {
+      display: inline-block;
+      padding: 14px 32px;
+      border-radius: 50px;
+      border: none;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      margin: 6px;
+    }
+    .btn-action:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+    .btn-verde  { background: linear-gradient(135deg, var(--verde-m), var(--verde)); color: var(--blanco); }
+    .btn-yellow { background: var(--amarillo); color: var(--verde); }
+
+    .back-link {
+      display: block; text-align: center;
+      margin-top: 16px; color: #aaa; font-size: .9rem; text-decoration: none;
+    }
+    .back-link:hover { color: var(--verde); }
+
+    .saving-msg { color: #aaa; font-size: .9rem; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="game-card">
+
+    <!-- QUIZ SCREEN -->
+    <div id="quiz-screen">
+      <div class="game-header">
+        <h1>🌿 Quiz de Plantas</h1>
+        <span class="progress-info" id="q-counter">1 / 10</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="q-progress" style="width:0%"></div>
+      </div>
+      <div class="question-box">
+        <span class="q-emoji" id="q-emoji">🌱</span>
+        <p class="q-text" id="q-text">Cargando...</p>
+      </div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="result-screen" class="result-screen">
+      <span class="result-emoji" id="r-emoji">🎉</span>
+      <div class="stars" id="r-stars">⭐⭐⭐</div>
+      <h2 class="result-title" id="r-title">¡Excelente!</h2>
+      <div class="result-score" id="r-score">0 / 10</div>
+      <p class="result-msg" id="r-msg">¡Lo hiciste muy bien!</p>
+      <div>
+        <button class="btn-action btn-verde" onclick="restart()">🔄 Jugar de nuevo</button>
+        <a href="../guardian/dashboard.html" class="btn-action btn-yellow" style="text-decoration:none">🏠 Volver</a>
+      </div>
+      <p class="saving-msg" id="saving-msg">💾 Guardando resultado...</p>
+    </div>
+
+    <a href="../guardian/dashboard.html" class="back-link" id="back-link">← Volver al inicio</a>
+  </div>
+
+  <script type="module">
+    import { auth, db } from "../firebase-config.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { doc, getDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const QUESTIONS = [
+      { e:'🌱', q:'¿Qué necesita una planta para crecer?', opts:['Agua, sol y tierra','Solo agua','Solo luz','Solo tierra'], a:0 },
+      { e:'💧', q:'¿Cada cuánto debemos regar las plantas de la huerta?', opts:['Nunca','Una vez a la semana','Todos los días','Una vez al año'], a:2 },
+      { e:'🌻', q:'¿Cómo se llama la parte de la planta que recibe el sol?', opts:['La raíz','La hoja','La semilla','El tronco'], a:1 },
+      { e:'🫘', q:'¿De dónde nacen las plantas?', opts:['De las hojas','De las piedras','De las semillas','Del agua'], a:2 },
+      { e:'🐛', q:'¿Para qué sirven las lombrices en la huerta?', opts:['Para dañar las plantas','Para hacer el suelo más rico','Para comer las hojas','Para nada'], a:1 },
+      { e:'🌿', q:'¿Cómo se llama la parte de la planta que está bajo la tierra?', opts:['La flor','La hoja','El tallo','La raíz'], a:3 },
+      { e:'☀️', q:'¿Qué hace la planta con la luz del sol?', opts:['Se quema','Hace su propio alimento','Se duerme','Se mueve'], a:1 },
+      { e:'♻️', q:'¿Qué podemos hacer con los residuos orgánicos para la huerta?', opts:['Tirarlos a la basura','Quemarlos','Hacer abono (compost)','Echarlos al agua'], a:2 },
+      { e:'🥕', q:'¿Cuál de estos es un vegetal que podemos sembrar en la huerta?', opts:['Una piedra','Una zanahoria','Un plástico','Una moneda'], a:1 },
+      { e:'🌍', q:'¿Por qué es importante cuidar las plantas?', opts:['No es importante','Dan sombra solo','Producen el oxígeno que respiramos','Solo se ven bonitas'], a:2 },
+    ];
+
+    let current = 0, score = 0, answered = false;
+    let userData = null, currentUser = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        const snap = await getDoc(doc(db, 'usuarios', user.uid));
+        if (snap.exists()) userData = snap.data();
+      }
+    });
+
+    function loadQuestion() {
+      if (current >= QUESTIONS.length) { showResult(); return; }
+      const q = QUESTIONS[current];
+      answered = false;
+      document.getElementById('q-emoji').textContent = q.e;
+      document.getElementById('q-text').textContent = q.q;
+      document.getElementById('q-counter').textContent = (current + 1) + ' / ' + QUESTIONS.length;
+      document.getElementById('q-progress').style.width = (current / QUESTIONS.length * 100) + '%';
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('feedback').className = 'feedback';
+
+      const opts = document.getElementById('options');
+      opts.innerHTML = q.opts.map((o, i) => `
+        <button class="option-btn" onclick="answer(${i})">${o}</button>
+      `).join('');
+    }
+
+    window.answer = (idx) => {
+      if (answered) return;
+      answered = true;
+      const q = QUESTIONS[current];
+      const btns = document.querySelectorAll('.option-btn');
+      btns.forEach(b => b.disabled = true);
+
+      if (idx === q.a) {
+        score++;
+        btns[idx].classList.add('correct');
+        document.getElementById('feedback').textContent = '✅ ¡Correcto! ¡Muy bien!';
+        document.getElementById('feedback').className = 'feedback correct';
+      } else {
+        btns[idx].classList.add('wrong');
+        btns[q.a].classList.add('correct');
+        document.getElementById('feedback').textContent = '❌ No era esa. La correcta era: ' + q.opts[q.a];
+        document.getElementById('feedback').className = 'feedback wrong';
+      }
+
+      setTimeout(() => { current++; loadQuestion(); }, 1800);
+    };
+
+    async function showResult() {
+      document.getElementById('quiz-screen').style.display = 'none';
+      document.getElementById('result-screen').classList.add('show');
+      document.getElementById('back-link').style.display = 'none';
+
+      const total = QUESTIONS.length;
+      const pct = score / total;
+      let emoji, title, msg, stars;
+
+      if (pct === 1)       { emoji='🏆'; title='¡Perfecto! ¡Eres un experto!'; msg='¡Respondiste todo bien! Eres un verdadero guardián de la naturaleza.'; stars='⭐⭐⭐'; }
+      else if (pct >= 0.7) { emoji='🎉'; title='¡Excelente trabajo!'; msg='¡Lo hiciste muy bien! Sigue aprendiendo sobre las plantas.'; stars='⭐⭐⭐'; }
+      else if (pct >= 0.5) { emoji='🌟'; title='¡Bien hecho!'; msg='Vas por buen camino. ¡Practica un poco más y serás un experto!'; stars='⭐⭐'; }
+      else                  { emoji='🌱'; title='¡Sigue intentando!'; msg='No te rindas, cada vez que juegas aprendes más. ¡Inténtalo de nuevo!'; stars='⭐'; }
+
+      document.getElementById('r-emoji').textContent = emoji;
+      document.getElementById('r-title').textContent = title;
+      document.getElementById('r-score').textContent = score + ' / ' + total;
+      document.getElementById('r-msg').textContent   = msg;
+      document.getElementById('r-stars').textContent = stars;
+
+      if (currentUser && userData) {
+        try {
+          await addDoc(collection(db, 'resultadosJuegos'), {
+            acudienteId: currentUser.uid,
+            nombreEstudiante: userData.nombreEstudiante || '',
+            juegoId: 'quiz-plantas',
+            juegoNombre: 'Quiz de Plantas 🌿',
+            puntaje: score,
+            total,
+            fecha: serverTimestamp()
+          });
+          document.getElementById('saving-msg').textContent = '✅ ¡Resultado guardado!';
+        } catch(e) {
+          document.getElementById('saving-msg').textContent = '⚠️ No se pudo guardar el resultado';
+        }
+      } else {
+        document.getElementById('saving-msg').textContent = '⚠️ Inicia sesión para guardar tu puntaje';
+      }
+    }
+
+    window.restart = () => {
+      current = 0; score = 0;
+      document.getElementById('result-screen').classList.remove('show');
+      document.getElementById('quiz-screen').style.display = 'block';
+      document.getElementById('back-link').style.display = 'block';
+      loadQuestion();
+    };
+
+    loadQuestion();
+  </script>
+</body>
+</html>

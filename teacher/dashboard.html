@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Docente – Campo Huerta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --verde: #2d6a2d; --verde-m: #4caf50; --verde-p: #e8f5e9;
+      --amarillo: #ffd54f; --morado: #7b1fa2; --rojo: #e53935;
+      --azul: #1565c0; --blanco: #fff; --radio: 16px;
+      --sidebar: 260px;
+    }
+    body { font-family: 'Nunito', sans-serif; background: #f5f5f5; display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar);
+      background: linear-gradient(180deg, var(--verde) 0%, #1b5e20 100%);
+      position: fixed; left: 0; top: 0; bottom: 0;
+      display: flex; flex-direction: column;
+      padding: 28px 0;
+      z-index: 50;
+    }
+    .sidebar-logo {
+      text-align: center;
+      padding: 0 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+    }
+    .sidebar-logo .ico {
+      font-size: 3rem; display: block; margin-bottom: 8px;
+    }
+    .sidebar-logo h2 {
+      font-family: 'Fredoka One', cursive;
+      color: var(--blanco); font-size: 1.1rem;
+    }
+    .sidebar-logo p { color: rgba(255,255,255,.7); font-size: .8rem; margin-top: 4px; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 24px;
+      color: rgba(255,255,255,.8);
+      cursor: pointer;
+      transition: all .2s;
+      font-weight: 700;
+      font-size: .95rem;
+      border: none; background: none; width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255,255,255,.15);
+      color: var(--blanco);
+      border-left: 4px solid var(--amarillo);
+    }
+    .nav-item .nav-ico { font-size: 1.3rem; flex-shrink: 0; }
+
+    .nav-logout {
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,.15);
+      padding-top: 12px;
+    }
+
+    /* MAIN */
+    .main {
+      margin-left: var(--sidebar);
+      flex: 1;
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .topbar h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.8rem;
+      color: var(--verde);
+    }
+    .topbar .user-chip {
+      background: var(--blanco);
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: .9rem;
+      color: var(--verde);
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    }
+
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.08);
+      text-align: center;
+      border-top: 5px solid var(--verde-m);
+    }
+    .stat-card:nth-child(2) { border-top-color: var(--azul); }
+    .stat-card:nth-child(3) { border-top-color: var(--morado); }
+    .stat-card:nth-child(4) { border-top-color: var(--amarillo); }
+    .stat-ico { font-size: 2.2rem; margin-bottom: 8px; display: block; }
+    .stat-num {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2.2rem;
+      color: var(--verde);
+    }
+    .stat-card:nth-child(2) .stat-num { color: var(--azul); }
+    .stat-card:nth-child(3) .stat-num { color: var(--morado); }
+    .stat-label { font-size: .85rem; color: #777; margin-top: 4px; }
+
+    /* PANELS */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .section-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.4rem;
+      color: var(--verde);
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    /* TABLE */
+    .table-wrap {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      box-shadow: 0 4px 14px rgba(0,0,0,.08);
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--verde); color: var(--blanco); }
+    th {
+      padding: 14px 16px;
+      font-family: 'Fredoka One', cursive;
+      font-size: .95rem;
+      text-align: left;
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: .9rem;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--verde-p); }
+
+    .badge-rol {
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: .8rem;
+      font-weight: 800;
+    }
+    .badge-guardian { background: #e8f5e9; color: var(--verde); }
+
+    .btn-sm {
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: .85rem;
+      transition: opacity .2s;
+    }
+    .btn-sm:hover { opacity: .8; }
+    .btn-danger { background: #ffebee; color: var(--rojo); }
+    .btn-info   { background: #e3f2fd; color: var(--azul); }
+
+    /* FOTOS */
+    .photos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .photo-card {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0,0,0,.1);
+    }
+    .photo-card img {
+      width: 100%; height: 150px;
+      object-fit: cover;
+    }
+    .photo-card .photo-info {
+      padding: 12px;
+    }
+    .photo-card .photo-info strong { display: block; font-size: .9rem; color: var(--verde); }
+    .photo-card .photo-info small { color: #999; font-size: .8rem; }
+    .photo-card .photo-actions {
+      padding: 0 12px 12px;
+      display: flex; gap: 8px;
+    }
+
+    /* SEARCH */
+    .search-bar {
+      display: flex; gap: 12px;
+      margin-bottom: 18px;
+    }
+    .search-bar input {
+      flex: 1;
+      padding: 10px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-family: 'Nunito', sans-serif;
+      font-size: .95rem;
+      outline: none;
+    }
+    .search-bar input:focus { border-color: var(--verde-m); }
+
+    /* EMPTY STATE */
+    .empty {
+      text-align: center;
+      padding: 48px 20px;
+      color: #bbb;
+      font-size: 1rem;
+    }
+    .empty .empty-ico { font-size: 3rem; display: block; margin-bottom: 12px; }
+
+    /* SCORES */
+    .score-chip {
+      background: var(--verde-p);
+      color: var(--verde);
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: .85rem;
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .sidebar { width: 60px; }
+      .sidebar-logo, .nav-item span { display: none; }
+      .main { margin-left: 60px; padding: 16px; }
+    }
+
+    .loading { text-align: center; padding: 40px; color: #aaa; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="ico">👩‍🏫</span>
+      <h2>Panel Docente</h2>
+      <p id="teacher-name">Cargando...</p>
+    </div>
+
+    <button class="nav-item active" onclick="showPanel('dashboard')">
+      <span class="nav-ico">🏠</span><span>Inicio</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('acudientes')">
+      <span class="nav-ico">👨‍👩‍👧</span><span>Acudientes</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('fotos')">
+      <span class="nav-ico">📸</span><span>Fotos</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('juegos')">
+      <span class="nav-ico">🎮</span><span>Resultados Juegos</span>
+    </button>
+
+    <div class="nav-logout">
+      <button class="nav-item" onclick="logout()">
+        <span class="nav-ico">🚪</span><span>Cerrar Sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <h1 id="panel-title">🏠 Inicio</h1>
+      <div class="user-chip">👩‍🏫 Docente</div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="panel-dashboard" class="panel active">
+      <div class="stats">
+        <div class="stat-card">
+          <span class="stat-ico">👨‍👩‍👧</span>
+          <div class="stat-num" id="stat-acudientes">0</div>
+          <div class="stat-label">Acudientes registrados</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-ico">📸</span>
+          <div class="stat-num" id="stat-fotos">0</div>
+          <div class="stat-label">Fotos subidas</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-ico">🎮</span>
+          <div class="stat-num" id="stat-juegos">0</div>
+          <div class="stat-label">Juegos completados</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-ico">🌱</span>
+          <div class="stat-num" id="stat-compromisos">🟢</div>
+          <div class="stat-label">Proyecto activo</div>
+        </div>
+      </div>
+
+      <div class="section-title">📋 Últimas fotos subidas</div>
+      <div id="recent-photos" class="photos-grid">
+        <div class="loading">Cargando fotos...</div>
+      </div>
+    </div>
+
+    <!-- ACUDIENTES -->
+    <div id="panel-acudientes" class="panel">
+      <div class="search-bar">
+        <input type="text" id="search-acudiente" placeholder="🔍 Buscar por nombre o estudiante..." oninput="filterAcudientes()" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Acudiente</th>
+              <th>Estudiante</th>
+              <th>Correo</th>
+              <th>Registro</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="acudientes-table">
+            <tr><td colspan="5" class="loading">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FOTOS -->
+    <div id="panel-fotos" class="panel">
+      <div class="search-bar">
+        <input type="text" id="search-foto" placeholder="🔍 Buscar por estudiante..." oninput="filterFotos()" />
+      </div>
+      <div id="fotos-grid" class="photos-grid">
+        <div class="loading">Cargando fotos...</div>
+      </div>
+    </div>
+
+    <!-- JUEGOS -->
+    <div id="panel-juegos" class="panel">
+      <div class="search-bar">
+        <input type="text" id="search-juego" placeholder="🔍 Buscar por estudiante..." oninput="filterJuegos()" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Estudiante</th>
+              <th>Juego</th>
+              <th>Puntaje</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="juegos-table">
+            <tr><td colspan="4" class="loading">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { auth, db, storage } from "../firebase-config.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      collection, getDocs, getDoc, doc, deleteDoc, query, orderBy, limit
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { ref, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+    let allAcudientes = [], allFotos = [], allJuegos = [];
+
+    // AUTH CHECK
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = '../login.html'; return; }
+      const snap = await getDoc(doc(db, 'usuarios', user.uid));
+      if (!snap.exists() || snap.data().rol !== 'teacher') {
+        window.location.href = '../login.html'; return;
+      }
+      document.getElementById('teacher-name').textContent = snap.data().nombre || 'Docente';
+      loadAll();
+    });
+
+    async function loadAll() {
+      await Promise.all([loadAcudientes(), loadFotos(), loadJuegos()]);
+      loadRecentPhotos();
+    }
+
+    // ACUDIENTES
+    async function loadAcudientes() {
+      const snap = await getDocs(collection(db, 'usuarios'));
+      allAcudientes = [];
+      snap.forEach(d => {
+        if (d.data().rol === 'guardian') allAcudientes.push({ id: d.id, ...d.data() });
+      });
+      document.getElementById('stat-acudientes').textContent = allAcudientes.length;
+      renderAcudientes(allAcudientes);
+    }
+
+    function renderAcudientes(list) {
+      const tbody = document.getElementById('acudientes-table');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><span class="empty-ico">👨‍👩‍👧</span>No hay acudientes registrados aún</div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(a => `
+        <tr>
+          <td><strong>${a.nombre || '—'}</strong></td>
+          <td>🧒 ${a.nombreEstudiante || '—'}</td>
+          <td>${a.email || '—'}</td>
+          <td>${a.creadoEn?.toDate ? a.creadoEn.toDate().toLocaleDateString('es-CO') : '—'}</td>
+          <td>
+            <button class="btn-sm btn-danger" onclick="deleteUser('${a.id}')">🗑️ Eliminar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    window.filterAcudientes = () => {
+      const q = document.getElementById('search-acudiente').value.toLowerCase();
+      renderAcudientes(allAcudientes.filter(a =>
+        (a.nombre||'').toLowerCase().includes(q) ||
+        (a.nombreEstudiante||'').toLowerCase().includes(q)
+      ));
+    };
+
+    window.deleteUser = async (uid) => {
+      if (!confirm('¿Eliminar este acudiente?')) return;
+      await deleteDoc(doc(db, 'usuarios', uid));
+      await loadAcudientes();
+    };
+
+    // FOTOS
+    async function loadFotos() {
+      const snap = await getDocs(query(collection(db, 'fotos'), orderBy('fecha', 'desc')));
+      allFotos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('stat-fotos').textContent = allFotos.length;
+      renderFotos(allFotos);
+    }
+
+    function renderFotos(list) {
+      const grid = document.getElementById('fotos-grid');
+      if (!list.length) {
+        grid.innerHTML = '<div class="empty"><span class="empty-ico">📸</span>No hay fotos aún</div>';
+        return;
+      }
+      grid.innerHTML = list.map(f => `
+        <div class="photo-card" id="photo-${f.id}">
+          <img src="${f.url}" alt="Foto" onerror="this.src='https://via.placeholder.com/200x150?text=Foto'" />
+          <div class="photo-info">
+            <strong>🧒 ${f.nombreEstudiante || '—'}</strong>
+            <small>${f.fecha?.toDate ? f.fecha.toDate().toLocaleDateString('es-CO') : '—'}</small>
+          </div>
+          <div class="photo-actions">
+            <button class="btn-sm btn-danger" onclick="deletePhoto('${f.id}','${f.storagePath||''}')">🗑️ Eliminar</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadRecentPhotos() {
+      const recent = allFotos.slice(0, 6);
+      const grid = document.getElementById('recent-photos');
+      if (!recent.length) {
+        grid.innerHTML = '<div class="empty"><span class="empty-ico">📸</span>Aún no hay fotos subidas</div>';
+        return;
+      }
+      grid.innerHTML = recent.map(f => `
+        <div class="photo-card">
+          <img src="${f.url}" alt="Foto" onerror="this.src='https://via.placeholder.com/200x150?text=Foto'" />
+          <div class="photo-info">
+            <strong>🧒 ${f.nombreEstudiante || '—'}</strong>
+            <small>${f.fecha?.toDate ? f.fecha.toDate().toLocaleDateString('es-CO') : '—'}</small>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.filterFotos = () => {
+      const q = document.getElementById('search-foto').value.toLowerCase();
+      renderFotos(allFotos.filter(f => (f.nombreEstudiante||'').toLowerCase().includes(q)));
+    };
+
+    window.deletePhoto = async (id, storagePath) => {
+      if (!confirm('¿Eliminar esta foto?')) return;
+      await deleteDoc(doc(db, 'fotos', id));
+      if (storagePath) {
+        try { await deleteObject(ref(storage, storagePath)); } catch(e) {}
+      }
+      document.getElementById('photo-' + id)?.remove();
+      allFotos = allFotos.filter(f => f.id !== id);
+      document.getElementById('stat-fotos').textContent = allFotos.length;
+    };
+
+    // JUEGOS
+    async function loadJuegos() {
+      const snap = await getDocs(query(collection(db, 'resultadosJuegos'), orderBy('fecha', 'desc')));
+      allJuegos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('stat-juegos').textContent = allJuegos.length;
+      renderJuegos(allJuegos);
+    }
+
+    function renderJuegos(list) {
+      const tbody = document.getElementById('juegos-table');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="4"><div class="empty"><span class="empty-ico">🎮</span>Aún no hay resultados de juegos</div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(j => `
+        <tr>
+          <td><strong>🧒 ${j.nombreEstudiante || '—'}</strong></td>
+          <td>${j.juegoNombre || j.juegoId || '—'}</td>
+          <td><span class="score-chip">⭐ ${j.puntaje || 0} / ${j.total || 10}</span></td>
+          <td>${j.fecha?.toDate ? j.fecha.toDate().toLocaleDateString('es-CO') : '—'}</td>
+        </tr>
+      `).join('');
+    }
+
+    window.filterJuegos = () => {
+      const q = document.getElementById('search-juego').value.toLowerCase();
+      renderJuegos(allJuegos.filter(j => (j.nombreEstudiante||'').toLowerCase().includes(q)));
+    };
+
+    // NAV
+    const TITLES = {
+      dashboard: '🏠 Inicio',
+      acudientes: '👨‍👩‍👧 Acudientes',
+      fotos: '📸 Fotos del Proyecto',
+      juegos: '🎮 Resultados de Juegos'
+    };
+
+    window.showPanel = (name) => {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('panel-' + name).classList.add('active');
+      event.currentTarget.classList.add('active');
+      document.getElementById('panel-title').textContent = TITLES[name];
+    };
+
+    window.logout = async () => {
+      await signOut(auth);
+      window.location.href = '../login.html';
+    };
+  </script>
+</body>
+</html>
