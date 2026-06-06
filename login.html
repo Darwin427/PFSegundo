@@ -400,41 +400,4 @@
 
       setLoading('btn-guardian', true, '🌱 Crear cuenta de Acudiente');
       try {
-        const cred = await createUserWithEmailAndPassword(auth, email, pass);
-        await setDoc(doc(db, 'usuarios', cred.user.uid), {
-          nombre, nombreEstudiante: student, email, rol: 'guardian', creadoEn: new Date()
-        });
-        showAlert('✅ ¡Cuenta creada! Redirigiendo...', 'success');
-        setTimeout(() => { window.location.href = './guardian/dashboard.html'; }, 1500);
-      } catch(e) {
-        showAlert('❌ ' + traducirError(e.code));
-        setLoading('btn-guardian', false, '🌱 Crear cuenta de Acudiente');
-      }
-    };
-
-    // ===== REGISTRO DOCENTE =====
-    window.registerDocente = async () => {
-      const email = document.getElementById('d-email').value.trim();
-      const pass  = document.getElementById('d-pass').value;
-      const code  = document.getElementById('d-code').value.trim();
-
-      if (!email || !pass || !code) { showAlert('⚠️ Completa todos los campos'); return; }
-      if (code !== TEACHER_CODE)    { showAlert('❌ Código docente incorrecto'); return; }
-      if (pass.length < 6)          { showAlert('❌ Mínimo 6 caracteres en la contraseña'); return; }
-
-      setLoading('btn-docente', true, '👩‍🏫 Crear cuenta Docente');
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, email, pass);
-        await setDoc(doc(db, 'usuarios', cred.user.uid), {
-          nombre: 'Docente', email, rol: 'teacher', creadoEn: new Date()
-        });
-        showAlert('✅ ¡Cuenta docente creada! Redirigiendo...', 'success');
-        setTimeout(() => { window.location.href = './teacher/dashboard.html'; }, 1500);
-      } catch(e) {
-        showAlert('❌ ' + traducirError(e.code));
-        setLoading('btn-docente', false, '👩‍🏫 Crear cuenta Docente');
-      }
-    };
-  </script>
-</body>
-</html>
+        cons
