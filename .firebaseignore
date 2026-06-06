@@ -1,0 +1,6 @@
+# Firebase ignora estos archivos al hacer deploy
+# (firebase-config.js NO está aquí para que sí se suba)
+node_modules/
+.git/
+*.docx
+firebase-config.example.js

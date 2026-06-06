@@ -447,16 +447,13 @@
       // Ordenar por fecha en el cliente
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
         .sort((a, b) => (b.fecha?.seconds || 0) - (a.fecha?.seconds || 0));
-      tbody.innerHTML = docs.map(data => {
-        const data = d.data();
-        return `
+      tbody.innerHTML = docs.map(item => `
           <tr>
-            <td>${data.juegoNombre || data.juegoId || '—'}</td>
-            <td><span class="score-chip">⭐ ${data.puntaje || 0} / ${data.total || 10}</span></td>
-            <td>${data.fecha?.toDate ? data.fecha.toDate().toLocaleDateString('es-CO') : '—'}</td>
+            <td>${item.juegoNombre || item.juegoId || '—'}</td>
+            <td><span class="score-chip">⭐ ${item.puntaje || 0} / ${item.total || 10}</span></td>
+            <td>${item.fecha?.toDate ? item.fecha.toDate().toLocaleDateString('es-CO') : '—'}</td>
           </tr>
-        `;
-      }).join('');
+        `).join('');
     }
 
     function showAlert(id, msg, type) {
